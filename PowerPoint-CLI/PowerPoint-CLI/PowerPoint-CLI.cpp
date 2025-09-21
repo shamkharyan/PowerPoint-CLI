@@ -3,36 +3,84 @@
 
 #include <iostream>
 #include <string>
+#include <unordered_set>
+#include "Tokenizer.h"
+
+//void inputReader(std::istream& is)
+//{
+//    
+//
+//
+//    std::string token;
+//    while (is.get())
+//}
+
+enum class State
+{
+    EMPTY,
+    ARGUMENT,
+    VALUE,
+    ERROR,
+    END
+};
 
 int main()
 {
     constexpr const char* programName = "PowerPoint-CLI";
 
-    while (true)
+    State currState = State::EMPTY;
+
+    std::unordered_set<std::string> commands = {
+        "create",
+        "add-slide",
+        "add-shape",
+        "add-text",
+        "help",
+        "close",
+        "quit",
+        "move",
+        "save",
+        "open",
+        "goto",
+        "move",
+        "quit",
+        "delete",
+    };
+
+    Tokenizer t(std::cin);
+    std::string ss;
+
+    while (t.getNextToken(ss))
     {
-        std::string command;
-
-        std::cout << programName << "/> ";
-        std::getline(std::cin, command);
-
-        // std::vector<std::string> tokens = Tokenizer::tokenize(command);
-        // std::optional<Command> cmd = Parser::parse(tokens);
-        // if (cmd.has_value() && Analyzer::checkCmd(cmd.value()))
-        //   cmd.value().execute();
-        // else
-        //   std::cout << "Wrong command\n";
+        if (currState == State::EMPTY && commands.find(ss) != commands.end())
+            currState = State::ARGUMENT;
     }
+
+    //while (true)
+    //{
+    //    std::string command;
+
+    //    std::cout << programName << "/> ";
+    //    std::getline(std::cin, command);
+
+    //    // std::vector<std::string> tokens = Tokenizer::tokenize(command);
+    //    // std::optional<Command> cmd = Parser::parse(tokens);
+    //    // if (cmd.has_value() && Analyzer::checkCmd(cmd.value()))
+    //    //   cmd.value().execute();
+    //    // else
+    //    //   std::cout << "Wrong command\n";
+    //}
     return 0;
 }
 
 // create -> creates new project
-//   -name : string -> project name
+//   [-name] : string -> project name
 
-// add slide -> creates new slide
+// add-slide -> creates new slide
 //   [-at]      : pos integer -> insert index, by default appends from back
 //   [-bgcolor] : color       -> background color, by default is white
 
-// add shape -> add new shape in the slide
+// add-shape -> add new shape in the slide
 //   -type       : shape       -> shape type (rectangle, circle, line, arrow)
 //   -start      : coord       -> start coord for shape (top left corner for rect, center for circle)
 //   -end        : coord       -> end coord for shape (optional for rect, wrong for circle)
@@ -42,13 +90,13 @@ int main()
 //   [-bgcolor]  : color       -> background color of shape, by default is white
 //   [-olcolor]  : color       -> outline color of shape, by default is black
 
-// add text -> add new text in the slide
+// add-text -> add new text in the slide
 //   -t       : string      -> text 
 //   -start   : coord       -> start coord of the text
+//   -size    : pos integer -> font size of the text
 //   [-color] : color       -> color of the text
 //   [-font]  : string      -> font of the text
 //   [-style] : string      -> style of the text (bold, italic, underline, none)
-//   [-size]  : pos integer -> font size of the text
 //   [-link]  : string      -> link inside the text
 
 // help -> print manual
@@ -59,8 +107,8 @@ int main()
 
 // move -> move the object
 //   -id    : pos integer -> id of the movable object
-//   [-abs] : null        -> move by absolute coord system
 //   -start : coord       -> new coord of the object
+//   [-abs] : null        -> move by absolute coord system
 
 // save -> saves the current project
 
